@@ -40,3 +40,5 @@ npm run build
 ```
 yarn build
 ```
+## Архитектура
+![Схема](weblarek.png)

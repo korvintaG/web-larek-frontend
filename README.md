@@ -323,8 +323,6 @@ export interface IOrderResult {
     id: string;
 }
 
-// типы событий
-type EventAllType= "items:changed" | "";
 ```
 
 ## Размещение в сети

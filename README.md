@@ -282,7 +282,10 @@ interface IFormState {
 
 Класс является наследником класса Form с дженерик типом \<IPayAdress\>. 
 
-##Ключевые типы данных
+## Ключевые типы данных
+
+Ниже приведены основные типы данных:
+
 ```JavaScript
 export type ItemID = string;
 export type Image = string;

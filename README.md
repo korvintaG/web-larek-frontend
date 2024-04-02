@@ -84,6 +84,13 @@ export interface IEvents {
 - orderProducts - сделать заказ товара
 
 Также класс является наследником класса Api и реализует интерфейс IWebLarekAPI.
+```JavaScript
+export interface IWebLarekAPI {
+    getProductList: () => Promise<IProduct[]>;
+    getProduct: (id: string) => Promise<IProduct>;
+    orderProducts: (order: IOrder) => Promise<IOrderResult>;
+}
+```
 
 ## Компоненты модели данных (бизнес-логика)
 ### 1. Класс Model\<T\>

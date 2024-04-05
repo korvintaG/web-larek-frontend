@@ -86,9 +86,9 @@ export interface IEvents {
 Также класс является наследником класса Api и реализует интерфейс IWebLarekAPI.
 ```JavaScript
 export interface IWebLarekAPI {
-    getProductList: () => Promise<IProduct[]>;
-    getProduct: (id: string) => Promise<IProduct>;
-    orderProducts: (order: IOrder) => Promise<IOrderResult>;
+	getProductList: () => Promise<IProduct[]>;
+	getProduct: (id: string) => Promise<IProduct>;
+	orderProducts: (order: IOrder) => Promise<IOrderResult>;
 }
 ```
 
@@ -104,28 +104,43 @@ T - это тип обрабатываемых данных в модели.
 Класс имеет метод:
 - emitChanges - для генерации событий с передачей данных
 
+### 2. Класс ProductItem
+Хранит данные по товару. Реализует интерфейс IProduct. Является наследником класса Model.
 
-### 2. Класс AppState
+```JavaScript
+export interface IProduct {
+	id: string;
+	description: string;
+	image: string;
+	title: string;
+	category: Category;
+	price: number;
+}
+```
+
+
+### 3. Класс AppState
 Содержит состояние всего приложения и управляет этим состоянием. 
 
 Класс имеет такие методы:
 - setCatalog - загрузить в модель содержимое всего каталога товара и вызвать соотв. событие
-- setOrderField - установить указанное поле заказа
-- validateOrder - проверить корректность заполнения заказа
-- deleteFromBasket - удалить товар с корзины
-- clearBasket - очистить всю корзину
-- addToBasket - добавить товар в корзину
-- clearOrder - очистить весь заказ
-- getTotal - вернуть итоговую сумму заказа
 - setPreview - установить текущий товар и вызвать соотв. событие
+- addToBasket - добавить товар в корзину
+- delFromBasket - удалить товар с корзины
+- toggleBasket - добавить карточку в корзину, если ее нет, или удалить, если есть
+- clearBasket - очистить всю корзину
+- isInBasket - есть ли товар в корзине?
+- getBasketTotal - вернуть итоговую сумму заказа в корзине
+- validateOrder - проверить корректность заполнения заказа
+- setOrderField - сохранить конкретное поле заказа
 
 Также класс является наследником класса Model с дженерик типом равным IAppState.
 ```JavaScript
 export interface IAppState {
-    catalog: IProductList;
-    basket: ItemID[];
-    preview: ItemID | null;
-    order: IOrder | null;
+	catalog: IProduct[];
+	basket: string[];
+	preview: string | null;
+	order: IOrder | null;
 }
 ```
 
@@ -138,7 +153,7 @@ export interface IAppState {
 Конструктор принимает такие аргументы:
 - container: HTMLElement - контейнер, в котором будет формироваться HTMLElement
 
-Класс имеет главный универсальный метод render. Который проставляет переданные даннеые в поля текщего компонента.
+Класс имеет главный универсальный метод render. Который проставляет переданные данные в поля текщего компонента.
 
 Класс имеет также общие методы:
 - toggleClass - сменить класс у заданного HTMLElement
@@ -156,6 +171,8 @@ export interface IAppState {
 Конструктор принимает такие аргументы:
 - container: HTMLElement - корневой контейнер
 - actions: ISuccessActions - обработчик события 
+
+Класс имеет сеттер total, который сохраняет в визуальном компоненте сумму итого.
 
 Класс использует дженерик ISuccess=сумма итого.
 ```JavaScript
@@ -181,12 +198,14 @@ interface ISuccessActions {
 Класс является наследником класса Component с дженерик типом \<ICard\>
 ```JavaScript
 export interface ICard {
-    id: ItemID,
-    title: string;
-    description?: string;
-    image?: string;
-    price: number
-    category?: Category,
+	id: string;
+	title: string;
+	description?: string;
+	image?: string;
+	price: number;
+	category?: Category;
+	buttonText?: string;
+	itemIndex?: number;
 }
 ```
 
@@ -264,73 +283,106 @@ interface IModalData {
 - set valid(boolean) - сеттер меняет состояние формы - valid/invalid
 - set errors(string) - сеттер означивает текст ошибки формы
 - render - render данных полей формы с учетом валидации
+- onInputChange - внутренний метод, генерит кастомное событие на изменение значения поля ввода
 
 Класс является наследником класса Component с дженерик типом \<IFormState\>. Также сам класс содержит в своем определении дженерик T=тип данных полей формы.
 
 ```JavaScript
 interface IFormState {
     valid: boolean;
-    errors: string;
+    errors: string[];
 }
 ```
 
-### 8. Компонент OrderContacts
+### 8. Компонент Order
 Первая часть формы ввода заказа. 
 
-Класс имеет такие сеттеры:
-- set phone(string) - сеттер означивает телефон
-- set email(string) - сеттер означивает email
+Конструктор принимает такие аргументы:
+- container: HTMLElement - контейнер, в котором будет формироваться HTMLElement
+- events: EventEmitter - обработчики событий
 
-Класс является наследником класса Form с дженерик типом \<IContacts\>. 
-
-### 9. Компонент OrderPayAdress
-Первая часть формы ввода заказа. 
-
-Класс имеет такие сеттеры:
+Класс имеет такие методы:
+- set address(string) - сеттер означивает адрес
 - set payment(PaymentType) - сеттер означивает метод оплаты
-- set adress(string) - сеттер означивает адрес
+- get payment:PaymentType - возвращает текущий метод оплаты
+- setPaymentHandler - внутренний метод сопоставления кнопки с конкретным методом оплаты
 
-Класс является наследником класса Form с дженерик типом \<IPayAdress\>. 
+Класс является наследником класса Form с дженерик типом \<IOrder\>. 
+
+### 9. Компонент OrderContacts
+Первая часть формы ввода заказа. 
+
+Класс имеет такие сеттеры:
+- set email(string) - сеттер означивает email
+- set phone(string) - сеттер означивает телефон
+
+Класс является наследником класса Form с дженерик типом \<IOrder\>. 
 
 ## Ключевые типы данных
 
 Ниже приведены основные типы данных:
 
 ```JavaScript
-export type ItemID = string;
-export type Image = string;
-export type Category= "другое" | "софт-скил" | "дополнительное" | "кнопка" | "хард-скил";
+/**
+ * Варианты категорий
+ */
+export type Category =
+	| 'другое'
+	| 'софт-скил'
+	| 'дополнительное'
+	| 'кнопка'
+	| 'хард-скил';
 
-// продукты
-export interface IProduct  {
-    id: ItemID,
-    description: string,
-    image: Image,
-    title: string,
-    category: Category,
-    price: number
+/**
+ * интерфейс товара
+ */
+export interface IProduct {
+	id: string;
+	description: string;
+	image: string;
+	title: string;
+	category: Category;
+	price: number;
 }
 
-export interface IProductList {
-    total: number,
-    items: IProductList;
-}
+/**
+ * Тип метода оплаты
+ */
+export type PaymentType = 'online' | 'cash' | null;
 
-// Заказы
-export type PaymentType= 'online' | 'upon receipt';
-export type ItemIDs = ItemID[];
-
+/**
+ * Интерфейс заказа
+ */
 export interface IOrder {
-    payment: PaymentType,
-    email: string,
-    phone: string,
-    address: string,
-    total: number,
-    items: ItemIDs;
+	payment: PaymentType;
+	email: string;
+	phone: string;
+	address: string;
+	total: number;
+	items: string[];
 }
 
+/**
+ * Тип ошибок формы ввода заказа
+ */
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+
+/**
+ * Интерфейс ответа сервера на заказ товаров
+ */
 export interface IOrderResult {
-    id: string;
+	id: string;
+	total: number;
+}
+
+/**
+ * Интерфейс состояния всего приложения
+ */
+export interface IAppState {
+	catalog: IProduct[];
+	basket: string[];
+	preview: string | null;
+	order: IOrder | null;
 }
 
 ```

@@ -104,22 +104,8 @@ T - это тип обрабатываемых данных в модели.
 Класс имеет метод:
 - emitChanges - для генерации событий с передачей данных
 
-### 2. Класс ProductItem
-Хранит данные по товару. Реализует интерфейс IProduct. Является наследником класса Model.
 
-```JavaScript
-export interface IProduct {
-	id: string;
-	description: string;
-	image: string;
-	title: string;
-	category: Category;
-	price: number;
-}
-```
-
-
-### 3. Класс AppState
+### 2. Класс AppState
 Содержит состояние всего приложения и управляет этим состоянием. 
 
 Класс имеет такие методы:
@@ -131,8 +117,8 @@ export interface IProduct {
 - clearBasket - очистить всю корзину
 - isInBasket - есть ли товар в корзине?
 - getBasketTotal - вернуть итоговую сумму заказа в корзине
-- validateOrder - проверить корректность заполнения заказа
 - setOrderField - сохранить конкретное поле заказа
+- validateOrder - проверить корректность заполнения заказа
 
 Также класс является наследником класса Model с дженерик типом равным IAppState.
 ```JavaScript

@@ -96,6 +96,7 @@ events.on('preview:changed', (item: IProduct) => {
 		modal.render({
 			content: card.render({
 				title: item.title,
+				category: item.category,
 				image: item.image,
 				description: item.description,
 				price: item.price,
@@ -107,14 +108,7 @@ events.on('preview:changed', (item: IProduct) => {
 	if (item) {
 		api
 			.getProduct(item.id) // обновляем данные на всякий случай - вдруг изменились
-			.then((result) => {
-				item.description = result.description;
-				item.category = result.category;
-				item.price = result.price;
-				item.image = result.image;
-				item.title = result.title;
-				showItem(item);
-			})
+			.then(showItem)
 			.catch((err) => {
 				console.error(err);
 			});

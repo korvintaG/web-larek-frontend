@@ -60,15 +60,17 @@ export class Order extends Form<IOrder> {
 		if (!paymentType) {
 			this._paymentBtnCash.classList.remove(this.paymentActive);
 			this._paymentBtnOnline.classList.remove(this.paymentActive);
-		} else {
-			if (paymentType === 'online') {
-				this._paymentBtnCash.classList.remove(this.paymentActive);
-				this._paymentBtnOnline.classList.add(this.paymentActive);
-			} else {
-				this._paymentBtnOnline.classList.remove(this.paymentActive);
-				this._paymentBtnCash.classList.add(this.paymentActive);
-			}
-		}
+			return;
+		} 
+		
+ 		if (paymentType === 'online') {
+			this._paymentBtnCash.classList.remove(this.paymentActive);
+			this._paymentBtnOnline.classList.add(this.paymentActive);
+			return;
+		} 
+			
+		this._paymentBtnOnline.classList.remove(this.paymentActive);
+		this._paymentBtnCash.classList.add(this.paymentActive);
 	}
 
 	/**

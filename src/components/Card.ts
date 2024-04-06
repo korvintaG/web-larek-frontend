@@ -83,7 +83,10 @@ export class Card<T> extends Component<ICard> {
 
 	set price(value: number | null) {
 		if (value) this.setText(this._price, `${value} синапсов`);
-		else this.setText(this._price, `Бесценно`);
+		else {
+			this.setDisabled(this._button,true); // купить беценный товар невозможно
+			this.setText(this._price, `Бесценно`);
+		}
 	}
 
 	get price(): number | null {
@@ -125,6 +128,7 @@ export class Card<T> extends Component<ICard> {
 	set buttonText(value: string) {
 		if (this._button) this.setText(this._button, value);
 	}
+	
 	set itemIndex(value: number) {
 		if (this._itemIndex) this.setText(this._itemIndex, String(value));
 	}

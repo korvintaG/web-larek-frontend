@@ -1,17 +1,6 @@
 import { Model } from './base/Model';
 import { IAppState, Category, IOrder, IProduct, FormErrors } from '../types';
 
-/**
- * Данные по одному товару
- */
-export class ProductItem extends Model<IProduct> {
-	id: string;
-	description: string;
-	image: string;
-	title: string;
-	category: Category;
-	price: number;
-}
 
 /**
  * Данные для события изменения каталога
@@ -43,7 +32,7 @@ export class AppState extends Model<IAppState> {
 	 * @param items - список товаров
 	 */
 	setCatalog(items: IProduct[]) {
-		this.catalog = items.map((item) => new ProductItem(item, this.events));
+		this.catalog = items;
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
 
@@ -51,7 +40,7 @@ export class AppState extends Model<IAppState> {
 	 * выставить текущую карточку
 	 * @param item - карточка
 	 */
-	setPreview(item: ProductItem) {
+	setPreview(item: IProduct) {
 		this.preview = item.id;
 		this.emitChanges('preview:changed', item);
 	}

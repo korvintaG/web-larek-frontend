@@ -2,11 +2,7 @@ import './scss/styles.scss';
 
 import { WebLarekAPI } from './components/WebLarekAPI';
 import { API_URL, CDN_URL } from './utils/constants';
-import {
-	AppState,
-	CatalogChangeEvent,
-	ProductItem,
-} from './components/AppData';
+import { AppState, CatalogChangeEvent } from './components/AppData';
 import { EventEmitter } from './components/base/events';
 import { Page } from './components/Page';
 import { Card } from './components/Card';
@@ -16,7 +12,7 @@ import { Basket } from './components/Basket';
 import { Order } from './components/Order';
 import { OrderContacts } from './components/OrderContacts';
 import { Success } from './components/Success';
-import { IOrder } from './types';
+import { IOrder, IProduct } from './types';
 
 const events = new EventEmitter();
 const api = new WebLarekAPI(CDN_URL, API_URL);
@@ -85,15 +81,15 @@ events.on('basket:open', () => {
 });
 
 // удаление товара из корзины
-events.on('basket_item:delete', (item: ProductItem) => {
+events.on('basket_item:delete', (item: IProduct) => {
 	appData.delFromBasket(item.id);
 	page.counter = appData.basket.length;
 	events.emit('basket:open');
 });
 
 // Изменен открытый выбранный товар
-events.on('preview:changed', (item: ProductItem) => {
-	const showItem = (item: ProductItem) => {
+events.on('preview:changed', (item: IProduct) => {
+	const showItem = (item: IProduct) => {
 		const card = new Card('card', cloneTemplate(cardPreviewTemplate), {
 			onClick: () => events.emit('card:toggle', item),
 		});
@@ -128,12 +124,12 @@ events.on('preview:changed', (item: ProductItem) => {
 });
 
 // Открыть карточку
-events.on('card:select', (item: ProductItem) => {
+events.on('card:select', (item: IProduct) => {
 	appData.setPreview(item);
 });
 
 // В корзину/из корзины
-events.on('card:toggle', (item: ProductItem) => {
+events.on('card:toggle', (item: IProduct) => {
 	appData.toggleBasket(item.id);
 	modal.close();
 	page.counter = appData.basket.length;
@@ -213,13 +209,13 @@ events.on('formErrors:change', (errors: Partial<IOrder>) => {
 		const { address, payment } = errors;
 		order.valid = !address && !payment;
 		order.errors = Object.values({ address, payment })
-			.filter((i) => !!i)
+			.filter(Boolean)
 			.join('; ');
 	} else {
 		const { email, phone } = errors;
 		orderContacts.valid = !email && !phone;
 		orderContacts.errors = Object.values({ phone, email })
-			.filter((i) => !!i)
+			.filter(Boolean)
 			.join('; ');
 	}
 });
